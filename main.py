@@ -1,56 +1,37 @@
-import matplotlib.pyplot as plt
-from scurve_calculation import SCurveMotion
+from scurve_planner import ScurvePlanner
+from plotting import plot_trajectory
+from extract_trajectory_profiles import extract_trajectory_profiles
 
+import numpy as np
 
-# Define the maximum constraints
-max_velocity = 2.0  # m/s
-max_acceleration = 1.0  # m/s^2
-max_jerk = 2.0  # m/s^3
+# Create an instance of the S-curve planner
+planner = ScurvePlanner()
 
-# Create an instance of SCurveMotion
-s_curve = SCurveMotion(max_velocity, max_acceleration, max_jerk)
+# Define the start and end positions (q0 and q1), initial and final velocities (v0 and v1)
+# Example: planning a 1-DOF trajectory (one dimensional) with given velocity and acceleration limits
+q0 = np.array([0.0])  # initial position
+q1 = np.array([100.0])  # final position
+v0 = np.array([0.0])  # initial velocity
+v1 = np.array([0.0])  # final velocity
 
-# Define the specific jerk and acceleration/deceleration values for the motion profile
-accel_jerk = 1.5  # m/s^3
-accel = 0.8  # m/s^2
-decel_jerk = 1.5  # m/s^3
-decel = 0.8  # m/s^2
-distance = 10.0  # meters
+# Define the velocity, acceleration, and jerk limits
+v_max = 10.0  # maximum velocity
+a_max = 2.0  # maximum acceleration
+j_max = 1  # maximum jerk
 
-# Calculate the motion profile
-motion_profile = s_curve.calculate_motion_profile(accel_jerk, accel, decel_jerk, decel, distance)
+# Plan the trajectory
+trajectory = planner.plan_trajectory(q0, q1, v0, v1, v_max, a_max, j_max)
 
-# Extract the data for plotting
-times = sorted(motion_profile.keys())
-positions = [motion_profile[t][0] for t in times]
-velocities = [motion_profile[t][1] for t in times]
-accelerations = [motion_profile[t][2] for t in times]
+print(trajectory)
 
-# Plot position, velocity, and acceleration over time
-plt.figure(figsize=(12, 8))
+# Time step for sampling the trajectory (for plotting)
+dt = 0.01
 
-# Position plot
-plt.subplot(3, 1, 1)
-plt.plot(times, positions, label="Position (m)")
-plt.ylabel("Position (m)")
-plt.grid(True)
-plt.legend()
+# Plot the planned trajectory (position, velocity, and acceleration profiles)
+plot_trajectory(trajectory, dt)
 
-# Velocity plot
-plt.subplot(3, 1, 2)
-plt.plot(times, velocities, label="Velocity (m/s)", color='orange')
-plt.ylabel("Velocity (m/s)")
-plt.grid(True)
-plt.legend()
+time, acceleration_profile, speed_profile, position_profile = extract_trajectory_profiles(trajectory, dt)
 
-# Acceleration plot
-plt.subplot(3, 1, 3)
-plt.plot(times, accelerations, label="Acceleration (m/s^2)", color='green')
-plt.xlabel("Time (s)")
-plt.ylabel("Acceleration (m/s^2)")
-plt.grid(True)
-plt.legend()
+print(acceleration_profile)
 
-# Show the plots
-plt.tight_layout()
-plt.show()
+print(acceleration_profile.shape)

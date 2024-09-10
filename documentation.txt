@@ -1,0 +1,56 @@
+File Breakdown
+
+    constants.py
+        This file holds constant values such as:
+            ACCELERATION_ID, SPEED_ID, POSITION_ID: Index values for accessing acceleration, speed, and position in arrays.
+            EPSILON: A small value used for comparisons to avoid floating-point precision issues.
+
+    planningerror.py
+        Contains a custom PlanningError class which extends Python's Exception class. This is raised when a trajectory cannot be planned due to physical constraints or numerical problems.
+
+    trajectory.py
+        Defines the Trajectory class.
+            Stores and computes trajectory profiles.
+            Uses properties like dof (Degrees of Freedom), time, and trajectory for tracking the planned motion.
+            The __call__ method enables the Trajectory instance to return the acceleration, speed, and position for a specific time instance.
+
+    trajectory_planner.py
+        Defines the abstract base class TrajectoryPlanner with an abstract method plan_trajectory().
+        Contains utility functions like _check_shape to ensure that input parameters (positions, velocities, etc.) are consistent.
+
+    scurve_planner.py
+        Implements the main logic of the S-curve planner through the ScurvePlanner class, which inherits from TrajectoryPlanner.
+        Key functionalities include:
+            S-Curve Feasibility Checks (__scurve_check_possibility): Ensures that given initial/final conditions (position, velocity, etc.) can be achieved within physical limits.
+            Speed Calculation (__compute_maximum_speed_reached and __compute_maximum_speed_not_reached): Computes the time intervals and constraints to achieve the motion.
+            Trajectory Planning (__plan_trajectory_1D and __scurve_profile_no_opt): Generates the time intervals for acceleration/deceleration and cruising to move from the initial to the final position under the S-curve profile.
+            Trajectory Generation (__get_trajectory_func and __get_trajectory_function): Provides a callable function to compute the position, speed, and acceleration at any time.
+
+    plotting.py
+        Provides a plot_trajectory() function that uses matplotlib to visualize the planned trajectory.
+            It creates three subplots per degree of freedom to show acceleration, speed, and position profiles over time.
+
+    extract_trajectory_profiles.py
+        Implements a utility function extract_trajectory_profiles() which samples the planned trajectory at discrete time intervals and extracts the acceleration, speed, and position values.
+        This function can be used for further analysis or plotting.
+
+    main.py
+        This file likely acts as the main entry point, integrating all the different classes and functions to execute the motion planning process and visualization.
+
+Description of Main Components
+
+    Trajectory Class:
+        Stores the S-curve motion trajectory.
+        Allows retrieving position, speed, and acceleration at any given time.
+
+    ScurvePlanner Class:
+        Implements the core logic of planning a trajectory using the S-curve motion profile.
+        Ensures the planned motion adheres to physical constraints such as maximum velocity, acceleration, and jerk (rate of change of acceleration).
+        Returns a Trajectory object that can be used to sample the motion over time.
+
+    Error Handling:
+        The PlanningError class raises custom exceptions when trajectory planning fails due to infeasibility.
+
+    Plotting and Profiling:
+        plot_trajectory(): Plots acceleration, speed, and position profiles.
+        extract_trajectory_profiles(): Extracts motion data for further analysis.
