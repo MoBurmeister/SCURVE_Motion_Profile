@@ -11,6 +11,7 @@ planner = ScurvePlanner()
 # Example: planning a 1-DOF trajectory (one dimensional) with given velocity and acceleration limits
 q0 = np.array([0.0])  # initial position
 q1 = np.array([100.0])  # final position
+#final and initial velocity should be zero for the cart control but can be changed here
 v0 = np.array([0.0])  # initial velocity
 v1 = np.array([0.0])  # final velocity
 
